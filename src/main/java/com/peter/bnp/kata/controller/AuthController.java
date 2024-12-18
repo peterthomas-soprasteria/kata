@@ -2,7 +2,6 @@ package com.peter.bnp.kata.controller;
 
 import com.peter.bnp.kata.dto.UserRegistrationRequest;
 import com.peter.bnp.kata.dto.UserReponse;
-import com.peter.bnp.kata.exception.UserAlreadyExistsException;
 import com.peter.bnp.kata.model.User;
 import com.peter.bnp.kata.service.AuthService;
 import jakarta.validation.Valid;
