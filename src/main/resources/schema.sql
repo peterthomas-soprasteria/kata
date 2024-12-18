@@ -1,0 +1,6 @@
+CREATE TABLE books (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(250),
+    author VARCHAR(250),
+    price DECIMAL(10, 2)
+);

@@ -26,7 +26,7 @@ public class BookControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].author").value("James Gosling"))
                 .andExpect(jsonPath("$[0].price").value(10.0))
                 .andExpect(jsonPath("$[1].title").value("Python"))
-                .andExpect(jsonPath("$[1].author").value("Author 2"))
+                .andExpect(jsonPath("$[1].author").value("Guido van Rossum"))
                 .andExpect(jsonPath("$[1].price").value(20.0))
                 .andExpect(jsonPath("$[2].title").value("C++"))
                 .andExpect(jsonPath("$[2].author").value("Bjarne Stroustrup"))
