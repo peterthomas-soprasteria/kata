@@ -62,8 +62,6 @@ public class AuthServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
 
-        assertThrows(UserAlreadyExistsException.class, () -> {
-            authService.registerUser(username, password);
-        });
+        assertThrows(UserAlreadyExistsException.class, () -> authService.registerUser(username, password));
     }
 }
