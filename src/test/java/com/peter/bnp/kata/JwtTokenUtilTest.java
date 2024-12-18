@@ -1,6 +1,7 @@
 package com.peter.bnp.kata;
 
 import com.peter.bnp.kata.config.JwtProperties;
+import com.peter.bnp.kata.util.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,7 @@ class JwtTokenUtilTest {
     @BeforeEach
     void setup(){
         jwtProperties = new JwtProperties();
-        jwtProperties.setSecret("a-super-long-secret-key-that-should-be-kept-secret");
+        jwtProperties.setSecret("aSuperLongSecretKeyThatShouldBeKeptSecretSecretSecret");
         jwtProperties.setExpiration(3600000);
         jwtTokenUtil = new JwtTokenUtil(jwtProperties);
     }
@@ -29,7 +30,7 @@ class JwtTokenUtilTest {
 
         assertNotNull(token, "Token should not be null");
 
-        assertTrue(jwtTokenUtil.validateToken(token, username), "Token should be valid");
+        assertTrue(jwtTokenUtil.validateToken(token), "Token should be valid");
         assertEquals(username, jwtTokenUtil.extractUsername(token), "Username should be the same");
     }
 }
