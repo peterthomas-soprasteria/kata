@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,8 +52,14 @@ public class CartServiceTest {
         Book mockBook = new Book(1L,"Java Programming", "James Gosling", 10.0);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(cartItemRepository.findByUser(mockUser)).thenReturn(Optional.empty());
+        when(cartRepository.findByUser(mockUser)).thenReturn(Optional.empty());
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(mockBook));
+
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> {
+            Cart cart = invocation.getArgument(0, Cart.class);
+            cart.setId(1L);
+            return cart;
+        });
 
         Cart updatedCart = cartService.addItemToCart(username, bookId, quantity);
 
