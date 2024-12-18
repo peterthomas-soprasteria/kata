@@ -2,7 +2,6 @@ package com.peter.bnp.kata.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "cart_item")

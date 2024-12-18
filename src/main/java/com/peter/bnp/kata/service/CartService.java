@@ -13,7 +13,6 @@ import com.peter.bnp.kata.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class CartService {
