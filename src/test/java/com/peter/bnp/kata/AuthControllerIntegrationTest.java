@@ -76,7 +76,7 @@ public class AuthControllerIntegrationTest {
         existingUser.setPassword("$2a$12$KGEpzopqKLOzwcLTEpEzpuFmTVBldJGjzTC7Q.lpWdhhuKUnY41Mm");
         userRepository.save(existingUser);
 
-        String requestBody = objectMapper.writeValueAsString(new UserLoginRequest("existingUser", "somePassword"));
+        String requestBody = objectMapper.writeValueAsString(new UserLoginRequest("existingUser", "somepassword"));
 
         mockMvc.perform(post("/auth/login")
                         .contentType("application/json")
