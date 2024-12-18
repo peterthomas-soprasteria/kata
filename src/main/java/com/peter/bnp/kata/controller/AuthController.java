@@ -1,5 +1,7 @@
 package com.peter.bnp.kata.controller;
 
+import com.peter.bnp.kata.dto.LoginResponse;
+import com.peter.bnp.kata.dto.UserLoginRequest;
 import com.peter.bnp.kata.dto.UserRegistrationRequest;
 import com.peter.bnp.kata.dto.UserReponse;
 import com.peter.bnp.kata.model.User;
@@ -25,6 +27,12 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
         User user = authService.registerUser(request.username(), request.password());
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserReponse(user.getUsername()));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody UserLoginRequest request) {
+        String token = authService.loginUser(request.username(), request.password());
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(token));
     }
 
 }

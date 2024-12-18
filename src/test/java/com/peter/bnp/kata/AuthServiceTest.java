@@ -1,9 +1,11 @@
 package com.peter.bnp.kata;
 
+import com.peter.bnp.kata.exception.InvalidCredentialsException;
 import com.peter.bnp.kata.exception.UserAlreadyExistsException;
 import com.peter.bnp.kata.model.User;
 import com.peter.bnp.kata.repository.UserRepository;
 import com.peter.bnp.kata.service.AuthService;
+import com.peter.bnp.kata.util.JwtTokenUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,9 @@ public class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenUtil jwtTokenUtil;
 
     @InjectMocks
     private AuthService authService;
@@ -63,5 +67,49 @@ public class AuthServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
 
         assertThrows(UserAlreadyExistsException.class, () -> authService.registerUser(username, password));
+    }
+
+    @Test
+    void loginUserSuccess(){
+        String username = "peter";
+        String password = "password";
+        String hashedPassword = "hashedPassword";
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        existingUser.setPassword(hashedPassword);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.matches(password, hashedPassword)).thenReturn(true);
+        when(jwtTokenUtil.generateToken(username)).thenReturn("fake-token");
+
+        String token = authService.loginUser(username, password);
+
+        assertNotNull(token);
+        assertEquals("fake-token", token,"Token should be the same");
+    }
+
+    @Test
+    void loginUserInvalidPassword(){
+        String username = "peter";
+        String password = "password";
+        String hashedPassword = "hashedPassword";
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        existingUser.setPassword(hashedPassword);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.matches(password, hashedPassword)).thenReturn(false);
+
+        assertThrows(InvalidCredentialsException.class, () -> authService.loginUser(username, password));
+    }
+
+    @Test
+    void loginUserNotFound(){
+        String username = "peter";
+        String password = "password";
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        assertThrows(InvalidCredentialsException.class, () -> authService.loginUser(username, password));
     }
 }
