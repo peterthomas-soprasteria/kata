@@ -1,5 +1,6 @@
 package com.peter.bnp.kata;
 
+import com.peter.bnp.kata.exception.InvalidCredentialsException;
 import com.peter.bnp.kata.exception.UserAlreadyExistsException;
 import com.peter.bnp.kata.model.User;
 import com.peter.bnp.kata.repository.UserRepository;
