@@ -116,4 +116,41 @@ public class CartServiceTest {
         assertEquals(quantity, addedItem.getQuantity(), "Item should have the correct quantity");
     }
 
+    @Test
+    void addItemToCartUpdatesExistingItemInExistingCart() {
+        String username = "peter";
+        Long bookId = 1L;
+        int initialQuantity = 3;
+        int addedQuantity = 2;
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+
+        Book existingBook = new Book(1L,"Java Programming", "James Gosling", 10.0);
+        CartItem existingItem = new CartItem();
+        existingItem.setBook(existingBook);
+        existingItem.setQuantity(initialQuantity);
+
+        Cart existingCart = new Cart();
+        existingCart.setUser(mockUser);
+        existingCart.setCartItems(new ArrayList<>(List.of(existingItem)));
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(cartRepository.findByUser(mockUser)).thenReturn(Optional.of(existingCart));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(existingBook));
+
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> {
+            Cart cart = invocation.getArgument(0, Cart.class);
+            cart.setId(1L);
+            return cart;
+        });
+
+        Cart updatedCart = cartService.addItemToCart(username, bookId, addedQuantity);
+
+        assertNotNull(updatedCart, "Updated cart should not be null");
+        assertEquals(1, updatedCart.getCartItems().size(), "Cart should have 1 item");
+        CartItem updatedItem = updatedCart.getCartItems().get(0);
+        assertEquals(initialQuantity+addedQuantity, updatedItem.getQuantity(), "Item should have the correct quantity");
+    }
+
 }
