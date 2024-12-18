@@ -46,6 +46,7 @@ public class CartService {
         CartItem cartItem = new CartItem();
         cartItem.setBook(book);
         cartItem.setQuantity(quantity);
+        cartItem.setPrice(quantity*book.getPrice());
         cartItem.setCart(cart);
 
         cart.getCartItems().add(cartItem);
