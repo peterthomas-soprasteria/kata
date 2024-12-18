@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -72,6 +74,46 @@ public class CartServiceTest {
         assertEquals(quantity, item.getQuantity(), "Item should have the correct quantity");
 
         verify(cartRepository).save(any(Cart.class));
+    }
+
+    @Test
+    void addItemToCartCreatesNewItemInExistingCart() {
+        String username = "peter";
+        Long bookId = 2L;
+        int quantity = 3;
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+
+        Book existingBook = new Book(1L,"Java Programming", "James Gosling", 10.0);
+        CartItem existingItem = new CartItem();
+        existingItem.setBook(existingBook);
+        existingItem.setQuantity(2);
+
+        Cart existingCart = new Cart();
+        existingCart.setUser(mockUser);
+        existingCart.setCartItems(new ArrayList<>(List.of(existingItem)));
+
+        Book newBook = new Book(bookId, "Python Programming", "Guido van Rossum", 20.0);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(cartRepository.findByUser(mockUser)).thenReturn(Optional.of(existingCart));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(newBook));
+
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> {
+            Cart cart = invocation.getArgument(0, Cart.class);
+            cart.setId(1L);
+            return cart;
+        });
+
+        Cart updatedCart = cartService.addItemToCart(username, bookId, quantity);
+
+        assertNotNull(updatedCart, "Updated cart should not be null");
+        assertEquals(2, updatedCart.getCartItems().size(), "Cart should have 2 items");
+        CartItem addedItem = updatedCart.getCartItems().stream()
+                .filter(i -> i.getBook().equals(newBook))
+                .findFirst().orElseThrow();
+        assertEquals(quantity, addedItem.getQuantity(), "Item should have the correct quantity");
     }
 
 }
