@@ -1,5 +1,6 @@
 package com.peter.bnp.kata;
 
+import com.peter.bnp.kata.exception.BookNotFoundException;
 import com.peter.bnp.kata.exception.UserNotFoundException;
 import com.peter.bnp.kata.model.Book;
 import com.peter.bnp.kata.model.Cart;
@@ -162,6 +163,22 @@ public class CartServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> cartService.addItemToCart(username, bookId, quantity));
+    }
+
+    @Test
+    void addItemToCartThrowsExceptionIfBookNotFound() {
+        String username = "peter";
+        Long bookId = 1L;
+        int quantity = 1;
+
+        User mockUser = new User();
+        mockUser.setUsername(username);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(cartRepository.findByUser(mockUser)).thenReturn(Optional.empty());
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+
+        assertThrows((BookNotFoundException.class), () -> cartService.addItemToCart(username, bookId, quantity));
     }
 
 }
