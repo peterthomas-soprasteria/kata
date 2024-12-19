@@ -1,9 +1,8 @@
 package com.peter.bnp.kata.controller;
 
-import com.peter.bnp.kata.dto.BookResponse;
-import com.peter.bnp.kata.dto.CartItemResponse;
-import com.peter.bnp.kata.dto.CartResponse;
+import com.peter.bnp.kata.dto.*;
 import com.peter.bnp.kata.model.Cart;
+import com.peter.bnp.kata.model.Order;
 import com.peter.bnp.kata.service.CartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +58,15 @@ public class CartController {
         return ResponseEntity.ok(toCartResponse(cart));
     }
 
+    @PostMapping("/checkout")
+    public ResponseEntity<OrderResponse> checkout(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Order order = cartService.checkout(username);
+        return ResponseEntity.ok(toOrderResponse(order));
+    }
+
     private CartResponse toCartResponse(Cart cart){
         List<CartItemResponse> items = cart.getCartItems().stream()
                 .map(cartItem -> new CartItemResponse(
@@ -66,5 +74,15 @@ public class CartController {
                 cartItem.getQuantity()))
                 .toList();
         return new CartResponse(items);
+    }
+
+    private OrderResponse toOrderResponse(Order order){
+        List<OrderItemResponse> items = order.getOrderItems().stream()
+                .map(orderItem -> new OrderItemResponse(
+                        new BookResponse(orderItem.getBook().getId(), orderItem.getBook().getTitle(), orderItem.getBook().getPrice()),
+                        orderItem.getQuantity(),
+                        orderItem.getTotalPrice()))
+                .toList();
+        return new OrderResponse(items, order.getTotalPrice());
     }
 }
