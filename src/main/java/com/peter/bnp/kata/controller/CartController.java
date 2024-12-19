@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +29,15 @@ public class CartController {
         String username = authentication.getName();
 
         Cart cartUpdated = cartService.addItemToCart(username, bookId, quantity);
+        return ResponseEntity.ok(toCartResponse(cartUpdated));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<CartResponse> updateItemInCart(@RequestParam Long bookId, @RequestParam Integer quantity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Cart cartUpdated = cartService.updateItemInCart(username, bookId, quantity);
         return ResponseEntity.ok(toCartResponse(cartUpdated));
     }
 
