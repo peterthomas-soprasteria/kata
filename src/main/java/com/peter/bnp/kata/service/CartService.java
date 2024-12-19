@@ -84,4 +84,21 @@ public class CartService {
 
         return cart;
     }
+
+    public Cart removeItemFromCart(String username, Long bookId) {
+        Cart cart = cartRepository.findByUser(userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username)))
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
+
+        bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found: " + bookId));
+
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getBook().getId().equals(bookId))
+                .findFirst()
+                .orElseThrow(() -> new BookNotFoundException("Book not found in cart: " + bookId));
+
+        cart.getCartItems().remove(cartItem);
+        return cartRepository.save(cart);
+    }
 }
