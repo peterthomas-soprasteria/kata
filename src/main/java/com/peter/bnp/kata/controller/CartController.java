@@ -50,6 +50,15 @@ public class CartController {
         return ResponseEntity.ok(toCartResponse(cartUpdated));
     }
 
+    @GetMapping
+    public ResponseEntity<CartResponse> getCart() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Cart cart = cartService.getCartForUser(username);
+        return ResponseEntity.ok(toCartResponse(cart));
+    }
+
     private CartResponse toCartResponse(Cart cart){
         List<CartItemResponse> items = cart.getCartItems().stream()
                 .map(cartItem -> new CartItemResponse(
