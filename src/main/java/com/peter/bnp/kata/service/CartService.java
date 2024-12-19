@@ -7,7 +7,6 @@ import com.peter.bnp.kata.model.Cart;
 import com.peter.bnp.kata.model.CartItem;
 import com.peter.bnp.kata.model.User;
 import com.peter.bnp.kata.repository.BookRepository;
-import com.peter.bnp.kata.repository.CartItemRepository;
 import com.peter.bnp.kata.repository.CartRepository;
 import com.peter.bnp.kata.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,11 @@ import java.util.ArrayList;
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
 
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, UserRepository userRepository, BookRepository bookRepository) {
+    public CartService(CartRepository cartRepository, UserRepository userRepository, BookRepository bookRepository) {
         this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
     }
@@ -61,5 +58,30 @@ public class CartService {
                 });
 
         return cartRepository.save(cart);
+    }
+
+    public Cart updateItemInCart(String username, Long bookId, Integer quantity) {
+        Cart cart = cartRepository.findByUser(userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username)))
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found: " + bookId));
+
+        cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getBook().getId().equals(bookId))
+                .findFirst()
+                .ifPresentOrElse(cartItem -> {
+                    if (quantity <= 0) {
+                        cart.getCartItems().remove(cartItem);
+                    } else {
+                        cartItem.setQuantity(quantity);
+                        cartItem.setPrice(quantity * book.getPrice());//we want the current price of the book
+                    }
+                }, () -> {
+                    throw new BookNotFoundException("Book not found in cart: " + bookId);
+                });
+
+        return cart;
     }
 }

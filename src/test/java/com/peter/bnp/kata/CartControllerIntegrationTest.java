@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,19 +46,42 @@ public class CartControllerIntegrationTest {
         jwtToken = objectMapper.readTree(loginResponse).get("token").asText();
     }
 
+    private void addItemToCart(Long bookId, int quantity) throws Exception {
+        mockMvc.perform(post("/cart/add")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType("application/json")
+                        .param("bookId", "1")
+                        .param("quantity", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cartItems").isArray())
+                .andExpect(jsonPath("$.cartItems[0].book.id").value(bookId))
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(quantity));
+    }
+
     @Test
     void addItemToCartSuccess() throws Exception {
         long bookId = 1L;
         int quantity = 2;
 
-        mockMvc.perform(post("/cart/add")
+        addItemToCart(bookId, quantity);
+    }
+
+    @Test
+    void updateItemInCartSuccess() throws Exception{
+        long bookId = 1L;
+        int quantity = 2;
+        int newQuantity = 5;
+
+        addItemToCart(bookId, quantity);
+
+        mockMvc.perform(put("/cart/update")
                 .header("Authorization", "Bearer " + jwtToken)
                 .contentType("application/json")
                 .param("bookId", "1")
-                .param("quantity", "2"))
+                .param("quantity", "5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cartItems").isArray())
                 .andExpect(jsonPath("$.cartItems[0].book.id").value(bookId))
-                .andExpect(jsonPath("$.cartItems[0].quantity").value(quantity));
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(newQuantity));
     }
 }
