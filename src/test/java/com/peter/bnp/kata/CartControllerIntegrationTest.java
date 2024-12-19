@@ -99,4 +99,19 @@ public class CartControllerIntegrationTest {
                 .andExpect(jsonPath("$.cartItems").isArray())
                 .andExpect(jsonPath("$.cartItems").isEmpty());
     }
+
+    @Test
+    void getCartSuccess() throws Exception{
+        long bookId = 1L;
+        int quantity = 2;
+
+        addItemToCart(bookId, quantity);
+
+        mockMvc.perform(get("/cart")
+                .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cartItems").isArray())
+                .andExpect(jsonPath("$.cartItems[0].book.id").value(bookId))
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(quantity));
+    }
 }
