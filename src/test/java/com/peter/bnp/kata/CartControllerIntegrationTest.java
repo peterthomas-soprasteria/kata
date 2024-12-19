@@ -10,8 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,5 +82,21 @@ public class CartControllerIntegrationTest {
                 .andExpect(jsonPath("$.cartItems").isArray())
                 .andExpect(jsonPath("$.cartItems[0].book.id").value(bookId))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(newQuantity));
+    }
+
+    @Test
+    void removeItemFromCartSuccess() throws Exception{
+        long bookId = 1L;
+        int quantity = 2;
+
+        addItemToCart(bookId, quantity);
+
+        mockMvc.perform(delete("/cart/remove")
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType("application/json")
+                .param("bookId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cartItems").isArray())
+                .andExpect(jsonPath("$.cartItems").isEmpty());
     }
 }
