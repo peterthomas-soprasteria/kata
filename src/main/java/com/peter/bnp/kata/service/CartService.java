@@ -42,13 +42,20 @@ public class CartService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("Book not found: "+ bookId));
 
-        CartItem cartItem = new CartItem();
-        cartItem.setBook(book);
-        cartItem.setQuantity(quantity);
-        cartItem.setPrice(quantity*book.getPrice());
-        cartItem.setCart(cart);
-
-        cart.getCartItems().add(cartItem);
+        cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getBook().getId().equals(bookId))
+                .findFirst()
+                .ifPresentOrElse(cartItem -> {
+                    cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                    cartItem.setPrice(cartItem.getQuantity() * book.getPrice());
+                }, () -> {
+                    CartItem cartItem = new CartItem();
+                    cartItem.setBook(book);
+                    cartItem.setQuantity(quantity);
+                    cartItem.setPrice(quantity * book.getPrice());
+                    cartItem.setCart(cart);
+                    cart.getCartItems().add(cartItem);
+                });
 
         return cartRepository.save(cart);
     }
