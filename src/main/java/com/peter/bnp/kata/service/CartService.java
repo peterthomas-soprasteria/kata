@@ -29,6 +29,9 @@ public class CartService {
     }
 
     public Cart addItemToCart(String username, Long bookId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
