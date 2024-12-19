@@ -41,6 +41,15 @@ public class CartController {
         return ResponseEntity.ok(toCartResponse(cartUpdated));
     }
 
+    @DeleteMapping("/remove")
+    public ResponseEntity<CartResponse> removeItemFromCart(@RequestParam Long bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Cart cartUpdated = cartService.removeItemFromCart(username, bookId);
+        return ResponseEntity.ok(toCartResponse(cartUpdated));
+    }
+
     private CartResponse toCartResponse(Cart cart){
         List<CartItemResponse> items = cart.getCartItems().stream()
                 .map(cartItem -> new CartItemResponse(
