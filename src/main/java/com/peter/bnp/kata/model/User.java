@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     Long id;
     String username;
     String password;

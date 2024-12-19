@@ -1,10 +1,8 @@
 package com.peter.bnp.kata;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peter.bnp.kata.dto.UserLoginRequest;
 import com.peter.bnp.kata.dto.UserRegistrationRequest;
-import com.peter.bnp.kata.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +23,6 @@ public class CartControllerIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @Autowired
-    BookRepository bookRepository;
 
     private String jwtToken;
 
