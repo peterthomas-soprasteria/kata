@@ -1,5 +1,6 @@
 package com.peter.bnp.kata;
 
+import com.peter.bnp.kata.exception.UserNotFoundException;
 import com.peter.bnp.kata.model.Book;
 import com.peter.bnp.kata.model.Cart;
 import com.peter.bnp.kata.model.CartItem;
@@ -151,6 +152,16 @@ public class CartServiceTest {
         assertEquals(1, updatedCart.getCartItems().size(), "Cart should have 1 item");
         CartItem updatedItem = updatedCart.getCartItems().get(0);
         assertEquals(initialQuantity+addedQuantity, updatedItem.getQuantity(), "Item should have the correct quantity");
+    }
+
+    @Test
+    void addItemToCartThrowsExceptionIfUserNotFound() {
+        String username = "peter";
+        Long bookId = 1L;
+        int quantity = 2;
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> cartService.addItemToCart(username, bookId, quantity));
     }
 
 }
