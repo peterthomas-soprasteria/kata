@@ -2,12 +2,10 @@ package com.peter.bnp.kata.service;
 
 import com.peter.bnp.kata.exception.BookNotFoundException;
 import com.peter.bnp.kata.exception.UserNotFoundException;
-import com.peter.bnp.kata.model.Book;
-import com.peter.bnp.kata.model.Cart;
-import com.peter.bnp.kata.model.CartItem;
-import com.peter.bnp.kata.model.User;
+import com.peter.bnp.kata.model.*;
 import com.peter.bnp.kata.repository.BookRepository;
 import com.peter.bnp.kata.repository.CartRepository;
+import com.peter.bnp.kata.repository.OrderRepository;
 import com.peter.bnp.kata.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +16,13 @@ public class CartService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final OrderRepository orderRepository;
 
-    public CartService(CartRepository cartRepository, UserRepository userRepository, BookRepository bookRepository) {
+    public CartService(CartRepository cartRepository, UserRepository userRepository, BookRepository bookRepository, OrderRepository orderRepository) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.orderRepository = orderRepository;
     }
 
     public Cart addItemToCart(String username, Long bookId, int quantity) {
@@ -108,5 +108,34 @@ public class CartService {
 
         return cartRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
+    }
+
+    public Order checkout(String username) {
+        Cart cart = cartRepository.findByUser(userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username)))
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
+
+        double totalPrice = cart.getCartItems().stream()
+                .mapToDouble(cartItem -> cartItem.getPrice() * cartItem.getQuantity())
+                .sum();
+
+        Order order = new Order();
+        order.setUser(cart.getUser());
+        order.setTotalPrice(totalPrice);
+        order.setOrderItems(new ArrayList<>());
+        cart.getCartItems().forEach(cartItem -> {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setBook(cartItem.getBook());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setTotalPrice(cartItem.getPrice());
+            order.addOrderItem(orderItem);
+        });
+
+        Order savedOrder = orderRepository.save(order);
+
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+
+        return savedOrder;
     }
 }
