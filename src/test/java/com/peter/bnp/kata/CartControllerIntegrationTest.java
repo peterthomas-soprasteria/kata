@@ -114,4 +114,20 @@ public class CartControllerIntegrationTest {
                 .andExpect(jsonPath("$.cartItems[0].book.id").value(bookId))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(quantity));
     }
+
+    @Test
+    void checkoutSuccess() throws Exception{
+        long bookId = 1L;
+        int quantity = 2;
+
+        addItemToCart(bookId, quantity);
+
+        mockMvc.perform(post("/cart/checkout")
+                .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderItems").isArray())
+                .andExpect(jsonPath("$.orderItems[0].book.id").value(bookId))
+                .andExpect(jsonPath("$.orderItems[0].quantity").value(quantity))
+                .andExpect(jsonPath("$.orderItems[0].totalPrice").value(quantity * 10.0));//hardcoded price
+    }
 }
