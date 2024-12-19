@@ -10,11 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtTokenUtilTest {
 
     private JwtTokenUtil jwtTokenUtil;
-    private JwtProperties jwtProperties;
 
     @BeforeEach
     void setup(){
-        jwtProperties = new JwtProperties();
+        JwtProperties jwtProperties = new JwtProperties();
         jwtProperties.setSecret("aSuperLongSecretKeyThatShouldBeKeptSecretSecretSecret");
         jwtProperties.setExpiration(3600000);
         jwtTokenUtil = new JwtTokenUtil(jwtProperties);

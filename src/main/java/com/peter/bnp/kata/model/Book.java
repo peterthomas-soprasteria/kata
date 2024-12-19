@@ -1,19 +1,23 @@
 package com.peter.bnp.kata.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "books")
 @Data
-public class User {
+@AllArgsConstructor
+@RequiredArgsConstructor
+public class Book {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue
     Long id;
-    String username;
-    String password;
+    String title;
+    String author;
+    double price;
 }
