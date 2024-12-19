@@ -101,4 +101,12 @@ public class CartService {
         cart.getCartItems().remove(cartItem);
         return cartRepository.save(cart);
     }
+
+    public Cart getCartForUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+
+        return cartRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
+    }
 }
