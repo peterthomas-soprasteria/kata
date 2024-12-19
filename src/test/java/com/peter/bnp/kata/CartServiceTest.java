@@ -187,15 +187,6 @@ public class CartServiceTest {
         Long bookId = 1L;
         int quantity = 0;
 
-        User mockUser = new User();
-        mockUser.setUsername(username);
-
-        Book mockBook = new Book(1L,"Java Programming", "James Gosling", 10.0);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
-        when(cartRepository.findByUser(mockUser)).thenReturn(Optional.empty());
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(mockBook));
-
         assertThrows(IllegalArgumentException.class, () -> cartService.addItemToCart(username, bookId, quantity));
     }
 }
