@@ -125,9 +125,9 @@ public class CartControllerIntegrationTest {
         mockMvc.perform(post("/cart/checkout")
                 .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderItems").isArray())
-                .andExpect(jsonPath("$.orderItems[0].book.id").value(bookId))
-                .andExpect(jsonPath("$.orderItems[0].quantity").value(quantity))
-                .andExpect(jsonPath("$.orderItems[0].totalPrice").value(quantity * 10.0));//hardcoded price
+                .andExpect(jsonPath("$[0].orderItems[0].title").value("Java"))
+                .andExpect(jsonPath("$[0].orderItems[0].quantity").value(quantity))
+                .andExpect(jsonPath("$[0].orderItems[0].totalPrice").value(quantity * 10.0))
+                .andExpect(jsonPath("$[0].totalPrice").value(quantity * 10.0));//hardcoded price
     }
 }
