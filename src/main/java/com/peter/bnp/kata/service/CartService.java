@@ -82,7 +82,7 @@ public class CartService {
                     throw new BookNotFoundException("Book not found in cart: " + bookId);
                 });
 
-        return cart;
+        return cartRepository.save(cart);
     }
 
     public Cart removeItemFromCart(String username, Long bookId) {
@@ -93,12 +93,8 @@ public class CartService {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("Book not found: " + bookId));
 
-        CartItem cartItem = cart.getCartItems().stream()
-                .filter(item -> item.getBook().getId().equals(bookId))
-                .findFirst()
-                .orElseThrow(() -> new BookNotFoundException("Book not found in cart: " + bookId));
+        cart.getCartItems().removeIf(item -> item.getBook().getId().equals(bookId));
 
-        cart.getCartItems().remove(cartItem);
         return cartRepository.save(cart);
     }
 
