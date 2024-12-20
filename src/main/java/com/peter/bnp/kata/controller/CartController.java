@@ -59,12 +59,12 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<OrderResponse> checkout(){
+    public ResponseEntity<List<OrderResponse>> checkout(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         Order order = cartService.checkout(username);
-        return ResponseEntity.ok(toOrderResponse(order));
+        return ResponseEntity.ok(toOrderResponse(List.of(order)));
     }
 
     private CartResponse toCartResponse(Cart cart){
@@ -76,13 +76,19 @@ public class CartController {
         return new CartResponse(items);
     }
 
-    private OrderResponse toOrderResponse(Order order){
-        List<OrderItemResponse> items = order.getOrderItems().stream()
-                .map(orderItem -> new OrderItemResponse(
-                        new BookResponse(orderItem.getBook().getId(), orderItem.getBook().getTitle(), orderItem.getBook().getPrice()),
-                        orderItem.getQuantity(),
-                        orderItem.getTotalPrice()))
+    private List<OrderResponse> toOrderResponse(List<Order> orderList) {
+        return orderList.stream()
+                .map(order -> new OrderResponse(
+                                order.getOrderItems().stream()
+                                        .map(orderItem -> new OrderItemResponse(
+                                                        orderItem.getBook().getTitle(),
+                                                        orderItem.getQuantity(),
+                                                        orderItem.getTotalPrice()
+                                                )
+                                        ).toList(),
+                                order.getTotalPrice()
+                        )
+                )
                 .toList();
-        return new OrderResponse(items, order.getTotalPrice());
     }
 }

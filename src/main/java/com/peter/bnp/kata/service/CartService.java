@@ -112,7 +112,7 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for user: " + username));
 
         double totalPrice = cart.getCartItems().stream()
-                .mapToDouble(cartItem -> cartItem.getPrice() * cartItem.getQuantity())
+                .mapToDouble(CartItem::getPrice)
                 .sum();
 
         Order order = new Order();
