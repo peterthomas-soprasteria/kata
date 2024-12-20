@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/books").permitAll()
+                        .requestMatchers("/books").authenticated()
+                        .requestMatchers("/orders").authenticated()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
