@@ -46,7 +46,7 @@ public class OrderServiceTest {
     void getOrderForUserSuccess() {
         Order order = new Order();
         order.setId(1L);
-        order.setTotalPrice(100.0);
+        order.setTotalPrice(20.0);
 
         OrderItem orderItem = new OrderItem();
         orderItem.setBook(new Book(1L, "Java Programming", "James Gosling", 10.0));
