@@ -7,6 +7,7 @@ import com.peter.bnp.kata.model.OrderItem;
 import com.peter.bnp.kata.model.User;
 import com.peter.bnp.kata.repository.OrderRepository;
 import com.peter.bnp.kata.repository.UserRepository;
+import com.peter.bnp.kata.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +56,7 @@ public class OrderServiceTest {
         order.setOrderItems(List.of(orderItem));
 
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        when(orderRepository.findByUser(user)).thenReturn(Optional.of(order));
+        when(orderRepository.findByUser(user)).thenReturn(List.of(order));
 
         List<Order> orders = orderService.getOrdersForUser(user.getUsername());
 
